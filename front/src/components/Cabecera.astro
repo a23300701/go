@@ -1,0 +1,19 @@
+---
+import Hamburguesa from './Hamburguesa.astro';
+import Navegacion from './Navegacion.astro';
+import Buscador from './Buscador.jsx';
+const { conBuscador } = Astro.props;
+---
+<header class="sticky top-0 z-20 border-b" style="background: var(--color-bg); border-color: var(--color-border);">
+	<nav class="max-w-5xl mx-auto flex flex-wrap items-center gap-4 px-4 py-4">
+		<a href="/tienda">
+			<span class="font-serif text-lg">GomiFyles</span>
+			<span class="regla-firma"></span>
+		</a>
+		<div class="flex-1 min-w-40">
+			{conBuscador && <Buscador client:load />}
+		</div>
+		<Hamburguesa />
+		<Navegacion />
+	</nav>
+</header>

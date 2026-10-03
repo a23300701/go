@@ -1,0 +1,23 @@
+---
+import ContadorCarrito from './ContadorCarrito.jsx';
+import IconoTema from './IconoTema.astro';
+const usuario = Astro.locals.usuario;
+---
+<div class="enlaces-nav text-sm">
+	<a href="/tienda">Catálogo</a>
+	<a href="/carrito" class="boton-borde">
+		Carrito <ContadorCarrito client:only="react" />
+	</a>
+	{usuario?.rol === 'admin' && <a href="/admin">Admin</a>}
+	{usuario ? (
+		<>
+			<span class="texto-suave">Hola, {usuario.nombre}</span>
+			<form method="POST" action="/api/auth/salir">
+				<button type="submit" class="underline underline-offset-4">Salir</button>
+			</form>
+		</>
+	) : (
+		<a href="/login">Entrar</a>
+	)}
+	<IconoTema />
+</div>

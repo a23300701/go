@@ -1,0 +1,36 @@
+---
+const { categorias, activaId } = Astro.props;
+---
+<aside class="w-full md:w-52 shrink-0">
+	<h3 class="text-sm mb-3 texto-suave">Categorías</h3>
+	<ul class="flex md:flex-col gap-1 overflow-x-auto md:overflow-visible">
+		{categorias.map((categoria) => (
+			<li>
+				<a
+					href={`/categoria/${categoria.id}`}
+					class:list={['categoria-enlace', { activa: categoria.id === activaId }]}
+				>
+					{categoria.nombre}
+				</a>
+			</li>
+		))}
+	</ul>
+</aside>
+<style>
+	.categoria-enlace {
+		display: block;
+		white-space: nowrap;
+		padding: 0.5rem 0.75rem;
+		font-size: 0.875rem;
+		border-left: 2px solid transparent;
+		color: var(--color-ink-muted);
+	}
+	.categoria-enlace:hover {
+		border-color: var(--color-border);
+	}
+	.categoria-enlace.activa {
+		border-color: var(--color-primary);
+		color: var(--color-ink);
+		background: var(--color-surface);
+	}
+</style>

@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+if (Astro.locals.usuario) {
+	return Astro.redirect('/tienda');
+}
+
+const error = Astro.url.searchParams.get('error');
+---
+<BaseLayout titulo="Entrar · GomiFyles">
+	<div class="max-w-md mx-auto flex flex-col gap-8">
+		<h2 class="text-2xl">Entrar</h2>
+
+		{error === 'github' && <p class="texto-error">No se pudo entrar con GitHub, intenta otra vez.</p>}
+
+		<section class="tarjeta p-5">
+			<h3 class="mb-2">Clientes</h3>
+			<p class="text-sm mb-4 texto-suave">Entra o crea tu cuenta con GitHub. Es la forma de hacer pedidos.</p>
+			<a href="/api/auth/github" class="boton">Entrar con GitHub</a>
+		</section>
+
+		<section class="tarjeta p-5">
+			<h3 class="mb-2">Administrador</h3>
+			{error === '1' && <p class="text-sm mb-3 texto-error">Correo o contraseña incorrectos.</p>}
+			<form method="POST" action="/api/auth/login" class="flex flex-col gap-3">
+				<input type="email" name="email" placeholder="Correo" required class="campo" />
+				<input type="password" name="password" placeholder="Contraseña" required class="campo" />
+				<button type="submit" class="boton">Entrar como administrador</button>
+			</form>
+		</section>
+	</div>
+</BaseLayout>

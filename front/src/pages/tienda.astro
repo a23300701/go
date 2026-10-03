@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Portada from '../components/Portada.astro';
+import ListaCategorias from '../components/ListaCategorias.astro';
+import Catalogo from '../components/Catalogo.jsx';
+import PreguntasFrecuentes from '../components/PreguntasFrecuentes.astro';
+import { consultarGraphQL } from '../scripts/graphql.js';
+
+let categorias = [];
+let productos = [];
+let error = null;
+
+try {
+	const datos = await consultarGraphQL(`
+		{
+			categorias { id nombre }
+			productos {
+				id nombre imagen precio sabores disponibilidad
+				categoria { id nombre }
+			}
+		}
+	`);
+	categorias = datos.categorias;
+	productos = datos.productos;
+} catch (e) {
+	error = e.message;
+}
+---
+<BaseLayout titulo="Catálogo · GomiFyles" conBuscador>
+	<Portada />
+	{error ? (
+		<p class="texto-error">Error al cargar el catálogo: {error}</p>
+	) : (
+		<div class="flex flex-col md:flex-row gap-8">
+			<ListaCategorias categorias={categorias} />
+			<Catalogo client:load productos={productos} />
+		</div>
+	)}
+	<PreguntasFrecuentes />
+</BaseLayout>

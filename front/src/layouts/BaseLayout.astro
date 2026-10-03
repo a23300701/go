@@ -1,0 +1,36 @@
+---
+import Cabecera from '../components/Cabecera.astro';
+import PiePagina from '../components/PiePagina.astro';
+import '../styles/global.css';
+const { titulo, conBuscador = false, sinMarco = false } = Astro.props;
+---
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>{titulo}</title>
+		<script is:inline>
+			if (localStorage.getItem('tema') === 'oscuro') {
+				document.documentElement.classList.add('dark');
+			}
+		</script>
+	</head>
+	<body>
+		{sinMarco ? (
+			<slot />
+		) : (
+			<>
+				<Cabecera conBuscador={conBuscador} />
+				<main class="max-w-5xl mx-auto px-4 py-8">
+					<slot />
+				</main>
+				<PiePagina />
+			</>
+		)}
+		<script>
+			import "../scripts/menu.js";
+			import "../scripts/tema.js";
+		</script>
+	</body>
+</html>

@@ -1,0 +1,19 @@
+---
+const preguntas = [
+	{ pregunta: '¿Cuánto tarda mi pedido?', respuesta: 'Lo preparamos en cuanto lo recibimos. El tiempo de entrega depende de tu zona y lo confirmamos al hacer el pedido.' },
+	{ pregunta: '¿Cómo pago?', respuesta: 'Por ahora se registra el pedido. Los métodos de cobro con tarjeta se agregan en la siguiente etapa.' },
+	{ pregunta: '¿Puedo pedir muchas piezas?', respuesta: 'Sí. Escribe la cantidad en el producto. Solo te limitamos cuando se acaban las existencias.' },
+	{ pregunta: '¿Qué significa "sin azúcar"?', respuesta: 'Son gomitas endulzadas sin azúcar añadida. Los sabores disponibles están en cada producto.' },
+];
+---
+<section class="mt-16">
+	<h2 class="text-2xl mb-4">Antes de pedir</h2>
+	<div class="flex flex-col gap-2">
+		{preguntas.map((item) => (
+			<details class="tarjeta p-4">
+				<summary class="font-medium cursor-pointer">{item.pregunta}</summary>
+				<p class="mt-2 texto-suave">{item.respuesta}</p>
+			</details>
+		))}
+	</div>
+</section>

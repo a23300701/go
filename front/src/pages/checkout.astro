@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Pago from '../components/Pago.jsx';
+const usuario = Astro.locals.usuario;
+---
+<BaseLayout titulo="Confirmar compra · GomiFyles">
+	<div class="max-w-md mx-auto">
+		<Pago client:only="react" usuario={usuario} />
+	</div>
+</BaseLayout>

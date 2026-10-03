@@ -1,0 +1,113 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { consultarGraphQL } from '../scripts/graphql.js';
+import { COOKIE_SESION } from '../scripts/sesion.js';
+
+const usuario = Astro.locals.usuario;
+
+if (!usuario) {
+	return Astro.redirect('/login');
+}
+
+const esAdmin = usuario.rol === 'admin';
+let pedidos = [];
+let productos = [];
+let error = null;
+
+if (esAdmin) {
+	const token = Astro.cookies.get(COOKIE_SESION).value;
+
+	try {
+		const datos = await consultarGraphQL(`
+			{
+				pedidos {
+					id fecha total
+					usuario { nombre email }
+					detalles { cantidad producto { nombre } }
+				}
+				productos { id nombre precio disponibilidad categoria { nombre } }
+			}
+		`, {}, token);
+		pedidos = datos.pedidos;
+		productos = datos.productos;
+	} catch (e) {
+		error = e.message;
+	}
+} else {
+	Astro.response.status = 403;
+}
+---
+<BaseLayout titulo="Administración · GomiFyles">
+	{!esAdmin ? (
+		<div class="py-16 text-center">
+			<h2 class="text-2xl mb-2">Acceso denegado</h2>
+			<p class="mb-4 texto-suave">Esta página es solo para administradores.</p>
+			<a href="/tienda" class="hover:underline" style="color: var(--color-primary);">Volver al catálogo</a>
+		</div>
+	) : (
+		<div class="flex flex-col gap-10">
+			<h2 class="text-2xl">Administración</h2>
+			{error && <p class="texto-error">{error}</p>}
+
+			<section>
+				<h3 class="text-lg mb-3">Pedidos ({pedidos.length})</h3>
+				{pedidos.length === 0 ? (
+					<p class="texto-suave">Todavía no hay pedidos.</p>
+				) : (
+					<div class="tarjeta overflow-x-auto">
+						<table class="w-full text-sm text-left">
+							<thead class="texto-suave">
+								<tr>
+									<th class="p-3">#</th>
+									<th class="p-3">Fecha</th>
+									<th class="p-3">Cliente</th>
+									<th class="p-3">Productos</th>
+									<th class="p-3">Total</th>
+								</tr>
+							</thead>
+							<tbody>
+								{pedidos.map((pedido) => (
+									<tr class="border-t" style="border-color: var(--color-border);">
+										<td class="p-3">{pedido.id}</td>
+										<td class="p-3">{new Date(pedido.fecha).toLocaleString('es-MX')}</td>
+										<td class="p-3">{pedido.usuario?.nombre}</td>
+										<td class="p-3">
+											{pedido.detalles.map((d) => `${d.cantidad} × ${d.producto.nombre}`).join(', ')}
+										</td>
+										<td class="p-3">${pedido.total}</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+				)}
+			</section>
+
+			<section>
+				<h3 class="text-lg mb-3">Productos ({productos.length})</h3>
+				<div class="tarjeta overflow-x-auto">
+					<table class="w-full text-sm text-left">
+						<thead class="texto-suave">
+							<tr>
+								<th class="p-3">Producto</th>
+								<th class="p-3">Categoría</th>
+								<th class="p-3">Precio</th>
+								<th class="p-3">Stock</th>
+							</tr>
+						</thead>
+						<tbody>
+							{productos.map((producto) => (
+								<tr class="border-t" style="border-color: var(--color-border);">
+									<td class="p-3">{producto.nombre}</td>
+									<td class="p-3">{producto.categoria.nombre}</td>
+									<td class="p-3">${producto.precio}</td>
+									<td class="p-3">{producto.disponibilidad}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</section>
+		</div>
+	)}
+</BaseLayout>

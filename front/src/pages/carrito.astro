@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ListaCarrito from '../components/ListaCarrito.jsx';
+---
+<BaseLayout titulo="Carrito · GomiFyles">
+	<div class="max-w-xl mx-auto">
+		<ListaCarrito client:only="react" />
+	</div>
+</BaseLayout>

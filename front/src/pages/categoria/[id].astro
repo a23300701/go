@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Catalogo from '../../components/Catalogo.jsx';
+import { consultarGraphQL } from '../../scripts/graphql.js';
+
+const { id } = Astro.params;
+
+let categoria = null;
+let productos = [];
+let error = null;
+
+try {
+	const datos = await consultarGraphQL(`
+		query ($id: ID!) {
+			categoria(id: $id) { id nombre descripcion imagen }
+			productos(categoriaId: $id) {
+				id nombre imagen precio sabores disponibilidad
+				categoria { id nombre }
+			}
+		}
+	`, { id });
+	categoria = datos.categoria;
+	productos = datos.productos;
+} catch (e) {
+	error = e.message;
+}
+
+if (!error && !categoria) {
+	return Astro.redirect('/tienda');
+}
+---
+<BaseLayout titulo={`${categoria?.nombre ?? 'Categoría'} · GomiFyles`}>
+	<a href="/tienda" class="text-sm texto-suave hover:underline underline-offset-4">← Volver al catálogo</a>
+	{error ? (
+		<p class="texto-error mt-6">Error: {error}</p>
+	) : (
+		<div class="mt-6">
+			{categoria.imagen && (
+				<img src={categoria.imagen} alt={categoria.nombre} class="w-full h-40 object-cover rounded-md mb-4" />
+			)}
+			<h2 class="text-2xl mb-1">{categoria.nombre}</h2>
+			{categoria.descripcion && <p class="mb-6 texto-suave">{categoria.descripcion}</p>}
+			<Catalogo client:load productos={productos} />
+		</div>
+	)}
+</BaseLayout>
